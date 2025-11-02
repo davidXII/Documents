@@ -5,52 +5,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Cambridge English Certificate</title>
 
+  <meta name="author" content="David Tofan">
+  <meta property="og:title" content="CEC">
+  <meta property="og:description" content="Document PDF — CEC.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://davidxii.github.io/Documents/Cambridge.html">
+
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      background: #000;
-      color: white;
+      background: #000;          /* Fond noir complet */
+      color: #fff;
       overflow: hidden;
+      font-family: sans-serif;
     }
 
     #pdfContainer {
       width: 100%;
       height: 100vh;
-      overflow-y: scroll;
+      overflow-y: auto;
       background: #000;
       text-align: center;
+      -webkit-overflow-scrolling: touch; /* pour un scroll fluide sur iOS */
     }
 
     canvas {
       display: block;
       margin: 0 auto 20px auto;
       background: #000;
+      max-width: 100%;
+      height: auto;
+    }
+
+    #loading {
+      color: #888;
+      padding-top: 30vh;
+      font-size: 1rem;
     }
   </style>
 </head>
 <body>
 
-  <div id="pdfContainer">Chargement du document...</div>
+  <div id="pdfContainer">
+    <div id="loading">Chargement du document PDF...</div>
+  </div>
 
-  <!-- PDF.js -->
+  <!-- PDF.js depuis CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
     const url = "https://davidxii.github.io/Documents/English.pdf";
     const container = document.getElementById("pdfContainer");
-    container.textContent = "";
+    const loadingText = document.getElementById("loading");
 
-    const loadingTask = pdfjsLib.getDocument(url);
-    loadingTask.promise.then(pdf => {
-      console.log("PDF chargé, pages :", pdf.numPages);
+    // Configuration du worker PDF.js
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-      // Rendre chaque page
+    // Chargement du document
+    pdfjsLib.getDocument(url).promise.then(pdf => {
+      container.removeChild(loadingText);
+      console.log("PDF chargé :", pdf.numPages, "pages");
+
+      // Rendre chaque page du PDF
       for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
         pdf.getPage(pageNum).then(page => {
-          const scale = 1.5;
+          const scale = 1.5; // ajuster le zoom
           const viewport = page.getViewport({ scale });
 
+          // Création du canvas pour chaque page
           const canvas = document.createElement("canvas");
           const context = canvas.getContext("2d");
           canvas.height = viewport.height;
@@ -58,6 +81,7 @@
 
           container.appendChild(canvas);
 
+          // Rendu de la page
           const renderContext = {
             canvasContext: context,
             viewport: viewport
@@ -66,7 +90,7 @@
         });
       }
     }).catch(error => {
-      container.textContent = "Erreur de chargement du PDF.";
+      loadingText.textContent = "Erreur lors du chargement du PDF.";
       console.error(error);
     });
   </script>
