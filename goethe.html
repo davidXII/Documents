@@ -4,36 +4,30 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Goethe — Ministère</title>
-
-  <meta name="author" content="David Tofan">
-  
-  <!-- Métadonnées pour aperçu LinkedIn -->
-  <meta property="og:title" content="Goethe — Ministère">
-  <meta property="og:description" content="Document PDF — Ministère de l'Éducation, Goethe.">
-  <meta property="og:type" content="article">
-  <meta property="og:url" content="https://davidxii.github.io/Documents/goethe.html">
-
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      background-color: #000; /* Fond noir */
+      background: #000;
     }
-
     embed {
       width: 100%;
       height: 100vh;
       border: none;
-      background-color: #000; /* Pour combler les espaces vides */
+      background: #000;
       display: block;
     }
   </style>
 </head>
 <body>
+  <embed src="https://davidxii.github.io/Documents/MINISTERE.pdf" type="application/pdf">
 
-  <!-- Le PDF s'affiche directement -->
-  <embed src="https://davidxii.github.io/Documents/MINISTERE.pdf"
-         type="application/pdf">
+  <script>
+    // Si c'est un appareil iOS → ouvrir le PDF directement
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+      window.location.href = "https://davidxii.github.io/Documents/MINISTERE.pdf";
+    }
+  </script>
 </body>
 </html>
