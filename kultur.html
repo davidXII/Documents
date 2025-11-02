@@ -6,18 +6,93 @@
   <title>Kulturministerkonferenz</title>
 
   <meta name="author" content="David Tofan">
-  
-  <!-- Métadonnées pour aperçu LinkedIn -->
-  <meta property="og:title" content="DSD 1">
-  <meta property="og:description" content="Document PDF — Sprachdiplom.">
+  <meta property="og:title" content="Sprachdiplom">
+  <meta property="og:description" content="Document PDF — Ministère de l'Éducation, DSD 1.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://davidxii.github.io/Documents/kultur.html">
 
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #000;          /* Fond noir complet */
+      color: #fff;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+
+    #pdfContainer {
+      width: 100%;
+      height: 100vh;
+      overflow-y: auto;
+      background: #000;
+      text-align: center;
+      -webkit-overflow-scrolling: touch; /* pour un scroll fluide sur iOS */
+    }
+
+    canvas {
+      display: block;
+      margin: 0 auto 20px auto;
+      background: #000;
+      max-width: 100%;
+      height: auto;
+    }
+
+    #loading {
+      color: #888;
+      padding-top: 30vh;
+      font-size: 1rem;
+    }
+  </style>
 </head>
-<body style="margin:0; padding:0;">
+<body>
 
-  <!-- Le PDF s'affiche directement -->
-  <embed src="https://davidxii.github.io/Documents/Sprachdiplom.pdf" type="application/pdf" width="100%" height="100%" style="min-height:100vh; border:none;">
+  <div id="pdfContainer">
+    <div id="loading">Chargement du document PDF...</div>
+  </div>
 
+  <!-- PDF.js depuis CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    const url = "https://davidxii.github.io/Documents/Sprachdiplom.pdf";
+    const container = document.getElementById("pdfContainer");
+    const loadingText = document.getElementById("loading");
+
+    // Configuration du worker PDF.js
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+    // Chargement du document
+    pdfjsLib.getDocument(url).promise.then(pdf => {
+      container.removeChild(loadingText);
+      console.log("PDF chargé :", pdf.numPages, "pages");
+
+      // Rendre chaque page du PDF
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        pdf.getPage(pageNum).then(page => {
+          const scale = 1.5; // ajuster le zoom
+          const viewport = page.getViewport({ scale });
+
+          // Création du canvas pour chaque page
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+
+          container.appendChild(canvas);
+
+          // Rendu de la page
+          const renderContext = {
+            canvasContext: context,
+            viewport: viewport
+          };
+          page.render(renderContext);
+        });
+      }
+    }).catch(error => {
+      loadingText.textContent = "Erreur lors du chargement du PDF.";
+      console.error(error);
+    });
+  </script>
 </body>
 </html>
