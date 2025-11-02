@@ -4,22 +4,71 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Cambridge English Certificate</title>
-</head>
-<body style="margin:0; padding:0; background:black;">
 
-  <!-- Affiche dans la page sur desktop -->
-  <embed src="https://davidxii.github.io/Documents/English.pdf" 
-         type="application/pdf" 
-         width="100%" height="100%" 
-         style="min-height:100vh; border:none; display:block;"
-         id="pdfEmbed">
-
-  <script>
-    // Vérifie si c’est un mobile
-    if (/Mobi|Android/i.test(navigator.userAgent)) {
-      // Redirige directement vers le PDF pour une meilleure lecture
-      window.location.href = "https://davidxii.github.io/Documents/English.pdf";
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #000;
+      color: white;
+      overflow: hidden;
     }
+
+    #pdfContainer {
+      width: 100%;
+      height: 100vh;
+      overflow-y: scroll;
+      background: #000;
+      text-align: center;
+    }
+
+    canvas {
+      display: block;
+      margin: 0 auto 20px auto;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="pdfContainer">Chargement du document...</div>
+
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    const url = "https://davidxii.github.io/Documents/English.pdf";
+    const container = document.getElementById("pdfContainer");
+    container.textContent = "";
+
+    const loadingTask = pdfjsLib.getDocument(url);
+    loadingTask.promise.then(pdf => {
+      console.log("PDF chargé, pages :", pdf.numPages);
+
+      // Rendre chaque page
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        pdf.getPage(pageNum).then(page => {
+          const scale = 1.5;
+          const viewport = page.getViewport({ scale });
+
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+
+          container.appendChild(canvas);
+
+          const renderContext = {
+            canvasContext: context,
+            viewport: viewport
+          };
+          page.render(renderContext);
+        });
+      }
+    }).catch(error => {
+      container.textContent = "Erreur de chargement du PDF.";
+      console.error(error);
+    });
   </script>
 </body>
 </html>
