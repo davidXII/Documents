@@ -3,25 +3,91 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Olympiades maths 2022 — PDF</title>
+  <title>Olympiades de Mathématiques 2022</title>
 
-   <meta name="author" content="David Tofan">
+  <meta name="author" content="David Tofan">
   
-  <!-- Métadonnées pour aperçu LinkedIn -->
-  <meta property="og:title" content="Olympiades maths 2022 — PDF">
-  <meta property="og:description" content="Résultats - Mention honorable.">
+  <!-- Métadonnées pour les aperçus (LinkedIn, etc.) -->
+  <meta property="og:title" content="Olympiades de Mathématiques 2022">
+  <meta property="og:description" content="Document PDF — Résultats Olympiades de Mathématiques 2022.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://davidxii.github.io/Documents/olympiades-maths-2022.html">
-  <meta property="og:image" content="https://davidxii.github.io/Documents/academie.jpg">
 
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #000;
+      color: #fff;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+
+    #pdfContainer {
+      width: 100%;
+      height: 100vh;
+      overflow-y: auto;
+      background: #000;
+      text-align: center;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    canvas {
+      display: block;
+      margin: 0 auto 20px auto;
+      background: #000;
+    }
+
+    #loading {
+      color: #888;
+      padding-top: 30vh;
+    }
+  </style>
 </head>
-<body style="margin:0; padding:0;">
+<body>
 
-  <!-- Le PDF s'affiche directement -->
-  <embed src="https://davidxii.github.io/Documents/olympiades-maths-2022.pdf" type="application/pdf" width="100%" height="100%" style="min-height:100vh; border:none;">
+  <div id="pdfContainer">
+    <div id="loading">Chargement du document PDF...</div>
+  </div>
 
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    const url = "https://davidxii.github.io/Documents/olympiades-maths-2022.pdf";
+    const container = document.getElementById("pdfContainer");
+    const loadingText = document.getElementById("loading");
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+    pdfjsLib.getDocument(url).promise.then(pdf => {
+      container.removeChild(loadingText);
+      console.log("PDF chargé :", pdf.numPages, "pages");
+
+      // Afficher chaque page
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        pdf.getPage(pageNum).then(page => {
+          const scale = 1.5;
+          const viewport = page.getViewport({ scale });
+
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+
+          container.appendChild(canvas);
+
+          const renderContext = {
+            canvasContext: context,
+            viewport: viewport
+          };
+          page.render(renderContext);
+        });
+      }
+    }).catch(error => {
+      loadingText.textContent = "Erreur lors du chargement du PDF.";
+      console.error(error);
+    });
+  </script>
 </body>
 </html>
-
-
-
