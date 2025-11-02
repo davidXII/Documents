@@ -7,9 +7,9 @@
 
   <meta name="author" content="David Tofan">
   
-  <!-- Métadonnées pour les aperçus (LinkedIn, etc.) -->
+  <!-- Métadonnées pour aperçu LinkedIn -->
   <meta property="og:title" content="Olympiades de Mathématiques 2022">
-  <meta property="og:description" content="Document PDF — Résultats Olympiades de Mathématiques 2022.">
+  <meta property="og:description" content="Document PDF — Olympiades de Mathématiques.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://davidxii.github.io/Documents/olympiades-maths-2022.html">
 
@@ -18,76 +18,22 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      background: #000;
-      color: #fff;
-      overflow: hidden;
-      font-family: sans-serif;
+      background-color: #000; /* Fond noir */
     }
 
-    #pdfContainer {
+    embed {
       width: 100%;
       height: 100vh;
-      overflow-y: auto;
-      background: #000;
-      text-align: center;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    canvas {
+      border: none;
+      background-color: #000; /* Pour combler les zones vides */
       display: block;
-      margin: 0 auto 20px auto;
-      background: #000;
-    }
-
-    #loading {
-      color: #888;
-      padding-top: 30vh;
     }
   </style>
 </head>
 <body>
 
-  <div id="pdfContainer">
-    <div id="loading">Chargement du document PDF...</div>
-  </div>
-
-  <!-- PDF.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script>
-    const url = "https://davidxii.github.io/Documents/olympiades-maths-2022.pdf";
-    const container = document.getElementById("pdfContainer");
-    const loadingText = document.getElementById("loading");
-
-    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-
-    pdfjsLib.getDocument(url).promise.then(pdf => {
-      container.removeChild(loadingText);
-      console.log("PDF chargé :", pdf.numPages, "pages");
-
-      // Afficher chaque page
-      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-        pdf.getPage(pageNum).then(page => {
-          const scale = 1.5;
-          const viewport = page.getViewport({ scale });
-
-          const canvas = document.createElement("canvas");
-          const context = canvas.getContext("2d");
-          canvas.height = viewport.height;
-          canvas.width = viewport.width;
-
-          container.appendChild(canvas);
-
-          const renderContext = {
-            canvasContext: context,
-            viewport: viewport
-          };
-          page.render(renderContext);
-        });
-      }
-    }).catch(error => {
-      loadingText.textContent = "Erreur lors du chargement du PDF.";
-      console.error(error);
-    });
-  </script>
+  <!-- PDF affiché directement -->
+  <embed src="https://davidxii.github.io/Documents/olympiades-maths-2022.pdf"
+         type="application/pdf">
 </body>
 </html>
